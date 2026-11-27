@@ -1,13 +1,11 @@
 import { notFound } from "next/navigation";
-import { supabase, Product, inr, off } from "@/lib/supabase";
+import { inr, off } from "@/lib/supabase";
+import { getProduct } from "@/lib/catalog";
 import AddToCart from "./AddToCart";
 export const dynamic = "force-dynamic";
-export default async function PDP({ params }: { params: { slug: string } }) {
-  const db = supabase();
-  if (!db) notFound();
-  const { data } = await db.from("products").select("*, variants(*)").eq("slug", params.slug).single();
-  if (!data) notFound();
-  const p = data as Product;
+export default function PDP({ params }: { params: { slug: string } }) {
+  const p = getProduct(params.slug);
+  if (!p) notFound();
   return (
     <div className="max-w-6xl mx-auto px-4 mt-10 grid md:grid-cols-2 gap-10">
       <div className="aspect-[3/4] bg-champagne">{p.images?.[0] && <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover" />}</div>

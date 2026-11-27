@@ -8,8 +8,6 @@ export async function POST(req: Request) {
   const ok = expected.length === (razorpay_signature || "").length && crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(razorpay_signature));
   if (!ok) return NextResponse.json({ error: "Bad signature" }, { status: 400 });
   const db = supabaseAdmin();
-  const { data: o } = await db.from("orders").update({ paid: true, status: "confirmed", razorpay_payment_id }).eq("razorpay_order_id", razorpay_order_id).select("id").single();
-  if (o) { const { data: items } = await db.from("order_items").select("variant_id,qty").eq("order_id", o.id);
-    for (const i of items || []) await db.rpc("decrement_stock", { vid: i.variant_id, n: i.qty }); }
+  await db.from("orders").update({ paid: true, status: "confirmed", razorpay_payment_id }).eq("razorpay_order_id", razorpay_order_id);
   return NextResponse.json({ ok: true });
 }
