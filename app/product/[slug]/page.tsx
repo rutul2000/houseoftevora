@@ -3,7 +3,9 @@ import { supabase, Product, inr, off } from "@/lib/supabase";
 import AddToCart from "./AddToCart";
 export const dynamic = "force-dynamic";
 export default async function PDP({ params }: { params: { slug: string } }) {
-  const { data } = await supabase().from("products").select("*, variants(*)").eq("slug", params.slug).single();
+  const db = supabase();
+  if (!db) notFound();
+  const { data } = await db.from("products").select("*, variants(*)").eq("slug", params.slug).single();
   if (!data) notFound();
   const p = data as Product;
   return (

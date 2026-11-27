@@ -2,7 +2,9 @@ import { supabase, Product } from "@/lib/supabase";
 import ProductCard from "@/components/ProductCard";
 export const dynamic = "force-dynamic";
 export default async function Shop({ searchParams }: { searchParams: { category?: string; sort?: string } }) {
-  let q = supabase().from("products").select("*, categories!inner(slug)");
+  const db = supabase();
+  if (!db) return <div className="max-w-7xl mx-auto px-4 mt-10"><h1 className="text-4xl mb-6">Shop</h1><p>The collection is arriving soon.</p></div>;
+  let q = db.from("products").select("*, categories!inner(slug)");
   if (searchParams.category) q = q.eq("categories.slug", searchParams.category);
   const s = searchParams.sort;
   q = s === "price-asc" ? q.order("price_inr") : s === "price-desc" ? q.order("price_inr", { ascending: false }) : q.order("created_at", { ascending: false });

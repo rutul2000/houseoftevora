@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 export async function POST(req: Request) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.RAZORPAY_KEY_SECRET) return NextResponse.json({ error: "Checkout is not set up yet. Please check back soon." }, { status: 503 });
   const { items, customer, coupon } = await req.json();
   if (!Array.isArray(items) || !items.length) return NextResponse.json({ error: "Cart is empty." }, { status: 400 });
   if (!/^[1-9][0-9]{5}$/.test(customer?.pin || "") || !/^\S+@\S+\.\S+$/.test(customer?.email || "")) return NextResponse.json({ error: "Invalid email or PIN code." }, { status: 400 });
